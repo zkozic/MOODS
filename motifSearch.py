@@ -13,6 +13,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-s', '--sequences', action = 'store', dest = 'sequences', help = 'File with sequences in FASTA format')
 parser.add_argument('-m', '--motifs', action = 'store', dest = 'motifs', help = 'File with motifs in JASPAR count format')
 parser.add_argument('-t', '--threshold', type = float, action = 'store', dest = 'threshold', default = 0.001, help = 'Threshold value for matrix scanning. Default = 0.001')
+parser.add_argument('-o', '--output', action = 'store', dest = 'output', default = './moods_out.txt', help = 'Result output file. Outputs the results in moods_out.txt in current working directory')
 parser.add_argument('-b', '--background', action = 'store', dest = 'background', default = None, help = 'Background distribution as an array of four doubles, corresponding to the frequencies of A, C, G and T, respectively. By default the background is estimated from the sequence.')
 parser.add_argument('-l', '--log_base', action = 'store', dest = 'logbase', default = None, help = 'Base for logarithms used in log-odds computations. Relevant if using convert_log_odds=True and threshold_from_p=False. Defaults to natural logarithm if None is given.')
 parser.add_argument('-p', '--pseudocount', action = 'store', type = int, default = 1, dest = 'pcount', help = 'Pseudocount used in log-odds conversion and added to sequence symbol counts when estimating the background from sequence. Default 1')
@@ -38,10 +39,11 @@ for line in motifsfile:
 motif_list = [motifs[i] for i in motifs]
 
 ###Running MOODS
+output = open(args.output, 'w')
 for sequence in sequences:
-	print sequence
+	output.write(sequence + '\n')
 	for motif in motifs:
 		hits = MOODS.search(sequences[sequence], [motifs[motif]], thresholds = args.threshold, bg = args.background, both_strands = args.strands, log_base = args.logbase, pseudocount = args.pcount)
-		print 'Motif ' + motif + ': ' + str(len(hits[0]))
-	print ''
+		output.write('Motif ' + motif + ': ' + str(len(hits[0])) + '\n')
+	output.write('\n')
 #END
